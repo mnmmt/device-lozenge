@@ -1,3 +1,3 @@
-Commodore64 paddle USB MIDI controller.
+Midi controller in a wood box.
 
-Use a Teensy 2.0 microcontroller to turn a Commodore64 paddle into a USB MIDI controller.
+Teensy 2.0

@@ -8,19 +8,24 @@
 const int THRESHOLD = 4;
 
 // The number of pots
-const int pots = 2;
+const int pots = 5;
 
 int ledPin = 11;
 int btnState = 1;
 
-int pot_lookup[pots] = {A0, A1};
+int pot_lookup[pots] = {A0, A1, A2, A3, A4};
+int button_toggle[pots] = {0, 0, 0, 0, 1};
+//int button_momentary[pots] = {0, 0, 0, 0, 0};
 
 // previous read value for thresholding
 int lastreading[pots];
 int weighted[pots];
 
 // Set midi channel to send to
-int channel = 2;
+int channel = 0x2;
+
+// frame counter
+int frame = 0;
 
 void setup()
 {
@@ -28,44 +33,49 @@ void setup()
     lastreading[p] = 0;
     weighted[p] = 0;
   }
-
+  
   // Standard midi rate
   Serial.begin(31250);
   
-  pinMode(pot_lookup[0], INPUT); 
-  digitalWrite(pot_lookup[0], LOW);
-
-  pinMode(pot_lookup[1], INPUT); 
-  digitalWrite(pot_lookup[1], HIGH);
-  usbMIDI.sendControlChange(1, 127, channel);
-
+  for (int p = 0; p < pots; p++) {
+    pinMode(pot_lookup[p], INPUT);
+    digitalWrite(pot_lookup[p], button_toggle[p] ? HIGH : LOW);
+  }
+  
   pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, HIGH);
+  delay(250);
+  digitalWrite(ledPin, LOW);
+  delay(250);
+  digitalWrite(ledPin, HIGH);
+  delay(250);
+  digitalWrite(ledPin, LOW);
+  delay(250);
   digitalWrite(ledPin, HIGH);
 }
 
 void loop()
 {
-  // Get reading for all potentiometers
+  // Get reading for all potentiometers & switches
   for (int i = 0; i < pots; i++ ) {
     // http://electronics.stackexchange.com/a/64699
-    weighted[i] += (analogRead(pot_lookup[i]) - weighted[i]) / 8;
-    int midival = weighted[i] / 8;
-    int midiprev = lastreading[i] / 8;
-    if (abs(lastreading[i] - weighted[i]) > THRESHOLD && midival != midiprev) {
-      //usbMIDI.sendControlChange(2, 64, channel);
-      if (i == 0) {
-        usbMIDI.sendControlChange(i, midival, channel);
-      } else if (i == 1) {
-        if (midival < 4 && midiprev >= 4) {
-          //usbMIDI.sendControlChange(i, r / 8, channel);
-          btnState = !btnState;
-          usbMIDI.sendControlChange(i, btnState ? 127 : 0, channel);
-          digitalWrite(ledPin, btnState ? HIGH : LOW);
+    weighted[i] += (analogRead(pot_lookup[i]) - weighted[i]) / 5;
+    if (!(frame % 5)) {
+      int midival = weighted[i] / 8;
+      int midiprev = lastreading[i] / 8;
+      if (abs(lastreading[i] - weighted[i]) > THRESHOLD && midival != midiprev) {
+        if (button_toggle[i]) {
+          usbMIDI.sendControlChange(pots - i - 1, midival < 64 ? 0 : 127, channel);
+//      } else if (button_momentary) {
+//        usbMIDI.sendControlChange(i, midival < 64 ? 0 : 127, channel);
+        } else {
+          usbMIDI.sendControlChange(pots - i - 1, 127 - midival, channel);
         }
+        lastreading[i] = weighted[i];
       }
-      lastreading[i] = weighted[i];
     }
   }
   // Delay output
-  delay(10);
+  delay(2);
+  frame += 1;
 }
