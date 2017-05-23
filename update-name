@@ -1,10 +1,6 @@
 #!/bin/sh
 
-F="$HOME/bin/contrib/arduino-1.6.12/hardware/teensy/avr/cores/usb_midi/usb_private.h"
+F="${HOME}/bin/contrib/arduino-1.6.12/hardware/teensy/avr/cores/usb_midi/usb_private.h"
+name=`cat name.txt`
 
-if [ "$1" = "" ]
-then
-  echo "Usage: $0 device-name"
-else
-  sed -i.bak "s/\(STR_PRODUCT.*L\).*/\\1\"$1\"/g" "$F"
-fi
+sed -i.bak "s/\(STR_PRODUCT.*L\).*/\\1\"${name}\"/g" "$F"
