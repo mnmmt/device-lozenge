@@ -5,7 +5,7 @@
 // bin/contrib/arduino-1.6.12/hardware/teensy/avr/cores/usb_midi/usb_private.h
 
 // noise tolerance
-const int THRESHOLD = 4;
+const int THRESHOLD = 2;
 
 // The number of pots
 const int pots = 8;
