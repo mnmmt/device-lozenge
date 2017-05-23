@@ -8,13 +8,13 @@
 const int THRESHOLD = 4;
 
 // The number of pots
-const int pots = 5;
+const int pots = 8;
 
 int ledPin = 11;
 int btnState = 1;
 
-int pot_lookup[pots] = {A0, A1, A2, A3, A4};
-int button_toggle[pots] = {0, 0, 0, 0, 1};
+int pot_lookup[pots] = {A0, A1, A2, A3, A4, A5, A6, A7};
+int button_toggle[pots] = {0, 0, 0, 0, 0, 0, 0, 0};
 //int button_momentary[pots] = {0, 0, 0, 0, 0};
 
 // previous read value for thresholding
@@ -22,7 +22,7 @@ int lastreading[pots];
 int weighted[pots];
 
 // Set midi channel to send to
-int channel = 0x2;
+int channel = 0x3;
 
 // frame counter
 int frame = 0;
