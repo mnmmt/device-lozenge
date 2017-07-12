@@ -13,7 +13,7 @@ const int pots = 8;
 int ledPin = 11;
 int btnState = 1;
 
-int pot_lookup[pots] = {A0, A1, A2, A3, A4, A5, A6, A7};
+int pot_lookup[pots] = {A2, A3, A4, A5, A6, A7, A8, A9};
 int button_toggle[pots] = {0, 0, 0, 0, 0, 0, 0, 0};
 //int button_momentary[pots] = {0, 0, 0, 0, 0};
 
@@ -65,11 +65,11 @@ void loop()
       int midiprev = lastreading[i] / 8;
       if (abs(lastreading[i] - weighted[i]) > THRESHOLD && midival != midiprev) {
         if (button_toggle[i]) {
-          usbMIDI.sendControlChange(pots - i - 1, midival < 64 ? 0 : 127, channel);
+          usbMIDI.sendControlChange(i, midival < 64 ? 0 : 127, channel);
 //      } else if (button_momentary) {
 //        usbMIDI.sendControlChange(i, midival < 64 ? 0 : 127, channel);
         } else {
-          usbMIDI.sendControlChange(pots - i - 1, 127 - midival, channel);
+          usbMIDI.sendControlChange(i, midival, channel);
         }
         lastreading[i] = weighted[i];
       }
